@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/TodoList/TodoList.csproj": {}
+    "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/FrontEnd/TodoList.csproj": {}
   },
   "projects": {
-    "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/TodoList/TodoList.csproj": {
+    "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/FrontEnd/TodoList.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/TodoList/TodoList.csproj",
+        "projectUniqueName": "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/FrontEnd/TodoList.csproj",
         "projectName": "TodoList",
-        "projectPath": "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/TodoList/TodoList.csproj",
+        "projectPath": "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/FrontEnd/TodoList.csproj",
         "packagesPath": "/home/ivan/.nuget/packages/",
-        "outputPath": "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/TodoList/obj/",
+        "outputPath": "/home/ivan/UbuntoSide/UbutoVsCodeProjects/TodoApi/FrontEnd/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/ivan/.nuget/NuGet/NuGet.Config"
