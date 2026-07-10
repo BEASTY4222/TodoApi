@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+builder.Services.AddDbContext<TodoDb>(opt => opt.UseSqlite("Data Source=Todo.db"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddCors(options =>
@@ -61,7 +61,6 @@ static async Task<IList<string>> GetAllTodos(TodoDb db)
 
     return result;
 }
-//static async Task<IResult> GetAllTodos(TodoDb db) => TypedResults.Ok(await db.Todos.ToArrayAsync());
 
 static async Task<IResult> GetCompleteTodos(TodoDb db) => TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).ToListAsync());
 
