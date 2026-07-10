@@ -6,39 +6,49 @@
 
 <h1>Your Tasks</h1>
 <button class="btn btn-primary" @onclick="toggleFilter">@buttonMessage</button>
+<button class="btn btn-primary" @onclick="toggleAdding">Add a task</button>
+<button class="btn btn-primary" @onclick="toggleRemoving">Remove a task</button>
 
 <p></p>
+@if(addTask){
+    <label>Task: <input name="email" id="Email" value=""></label>
+}else if(removeTask){
 
-@if (items is null)
-{
-    <p>Loading...</p>
-}
-else if (items.Count == 0)
-{
-    <p>No tasks yet.</p>
-}
-else if(@showOnlyCompleted)
-{
-    <ul>
-        @foreach (var item in completedTasks ?? new List<string>())
-        {
-            <li>@item</li>
-        }
-    </ul>
 }else {
-    <ul>
-        @foreach (var item in items)
-        {
-            <li>@item</li>
-        }
-    </ul>
+    @if (items is null)
+    {
+        <p>Loading...</p>
+    }
+    else if (items.Count == 0)
+    {
+        <p>No tasks yet.</p>
+    }
+    else if(@showOnlyCompleted)
+    {
+        <ul>
+            @foreach (var item in completedTasks ?? new List<string>())
+            {
+                <li>@item</li>
+            }
+        </ul>
+    }else {
+        <ul>
+            @foreach (var item in items)
+            {
+                <li>@item</li>
+            }
+        </ul>
+    }
 }
+
 
 @code {
     private List<string>? items;
     private List<string>? completedTasks;
     private bool showOnlyCompleted = false;
     private string buttonMessage = "Show completed";
+    private bool addTask = false;
+    private bool removeTask = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,6 +59,23 @@ else if(@showOnlyCompleted)
     private void toggleFilter()
     {
         showOnlyCompleted = !showOnlyCompleted;
+        addTask = false;
+        removeTask = false;
         buttonMessage = showOnlyCompleted ? "Show All" : "Show Completed";    
+    }
+
+    private void toggleAdding(){
+        addTask = !addTask;
+        if(addTask){
+            buttonMessage = "Show all";
+            showOnlyCompleted = true;
+        }
+    }
+    private void toggleRemoving(){
+        removeTask = !removeTask;
+        if(removeTask){
+            buttonMessage = "Show all";
+            showOnlyCompleted = true;
+        }
     }
 }
