@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,8 +48,20 @@ todoItems.MapDelete("/{id}", DeleteTodo);
 
 app.Run();
 
+static async Task<IList<string>> GetAllTodos(TodoDb db)
+{
+    List<string> result = new List<string>();
 
-static async Task<IResult> GetAllTodos(TodoDb db) => TypedResults.Ok(await db.Todos.ToArrayAsync());
+    List<Todo> Todos = await db.Todos.ToListAsync();
+    foreach (Todo elem in Todos)
+    {
+        string done = elem.IsComplete == true ? "done" : "not finished";
+        result.Add($"{elem.Id} {elem.Name} is {done}");
+    }
+
+    return result;
+}
+//static async Task<IResult> GetAllTodos(TodoDb db) => TypedResults.Ok(await db.Todos.ToArrayAsync());
 
 static async Task<IResult> GetCompleteTodos(TodoDb db) => TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).ToListAsync());
 

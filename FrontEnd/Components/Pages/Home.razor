@@ -1,7 +1,33 @@
-﻿@page "/"
+﻿@inject HttpClient Http
+@page "/"
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Your Tasks</h1>
 
-Welcome to your new app.
+@if (items is null)
+{
+    <p>Loading...</p>
+}
+else if (items.Count == 0)
+{
+    <p>No tasks yet.</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in items)
+        {
+            <li>@item</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<string>? items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await Http.GetFromJsonAsync<List<string>>("/todoItems");
+    }
+}
