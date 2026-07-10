@@ -56,13 +56,28 @@ static async Task<IList<string>> GetAllTodos(TodoDb db)
     foreach (Todo elem in Todos)
     {
         string done = elem.IsComplete == true ? "done" : "not finished";
-        result.Add($"{elem.Id} {elem.Name} is {done}");
+        result.Add($"ID:{elem.Id} TASK-- {elem.Name} is {done} --");
     }
 
     return result;
 }
 
-static async Task<IResult> GetCompleteTodos(TodoDb db) => TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).ToListAsync());
+//static async Task<IResult> GetCompleteTodos(TodoDb db) => TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).ToListAsync());
+static async Task<IList<string>> GetCompleteTodos(TodoDb db)
+{
+    List<string> result = new List<string>();
+
+    List<Todo> Todos = await db.Todos.ToListAsync();
+    foreach (Todo elem in Todos)
+    {
+        if(elem.IsComplete == true)
+        {
+            result.Add($"ID:{elem.Id} TASK-- {elem.Name} is done --");
+        }
+    }
+
+    return result;
+}
 
 static async Task<IResult> GetTodo(int id, TodoDb db) => await db.Todos.FindAsync(id) is Todo todo ? TypedResults.Ok(todo) : TypedResults.NotFound();
 

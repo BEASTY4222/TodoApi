@@ -1,9 +1,13 @@
 ﻿@inject HttpClient Http
 @page "/"
+@rendermode InteractiveServer
 
 <PageTitle>Tasks</PageTitle>
 
 <h1>Your Tasks</h1>
+<button class="btn btn-primary" @onclick="toggleFilter">@buttonMessage</button>
+
+<p></p>
 
 @if (items is null)
 {
@@ -13,8 +17,15 @@ else if (items.Count == 0)
 {
     <p>No tasks yet.</p>
 }
-else
+else if(@showOnlyCompleted)
 {
+    <ul>
+        @foreach (var item in completedTasks ?? new List<string>())
+        {
+            <li>@item</li>
+        }
+    </ul>
+}else {
     <ul>
         @foreach (var item in items)
         {
@@ -25,9 +36,19 @@ else
 
 @code {
     private List<string>? items;
+    private List<string>? completedTasks;
+    private bool showOnlyCompleted = false;
+    private string buttonMessage = "Show completed";
 
     protected override async Task OnInitializedAsync()
     {
         items = await Http.GetFromJsonAsync<List<string>>("/todoItems");
+        completedTasks = await Http.GetFromJsonAsync<List<string>>("/todoItems/complete");
+    }
+
+    private void toggleFilter()
+    {
+        showOnlyCompleted = !showOnlyCompleted;
+        buttonMessage = showOnlyCompleted ? "Show All" : "Show Completed";    
     }
 }
