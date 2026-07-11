@@ -1,4 +1,5 @@
 ﻿@inject HttpClient Http
+@using System.Net.Http.Json
 @page "/"
 @rendermode InteractiveServer
 
@@ -7,13 +8,37 @@
 <h1>Your Tasks</h1>
 <button class="btn btn-primary" @onclick="toggleFilter">@buttonMessage</button>
 <button class="btn btn-primary" @onclick="toggleAdding">Add a task</button>
+<button class="btn btn-primary" @onclick="toggleComplete">Mark task as complete</button>
 <button class="btn btn-primary" @onclick="toggleRemoving">Remove a task</button>
 
 <p></p>
 @if(addTask){
-    <label>Task: <input name="email" id="Email" value=""></label>
-}else if(removeTask){
+    <div class="card p-3 my-3">
+        <h1>Create a New Task</h1>
+        
+        <EditForm Model="newTodo" OnValidSubmit="HandleAddSubmit">
+            
+            <div class="mb-3">
+                <label class="form-label">Task Name</label>
+                <InputText class="form-control" @bind-Value="newTodo.Name" />
+            </div>
 
+            <div class="mb-3 form-check">
+                <InputCheckbox class="form-check-input" @bind-Value="newTodo.IsComplete" id="isCompleteCheck" />
+                <label class="form-check-label" for="isCompleteCheck">Mark as Completed</label>
+            </div>
+
+            <button type="submit" class="btn btn-success">Add Task</button>
+        </EditForm>
+    </div>
+}else if(removeTask){
+    <div class="card p-3 my-3">
+        <h1>Remove a Task</h1>
+        <label class="form-label">The ID of the task to remove</label>
+        <input type="number" class="form-control" @bind="removalId" />
+        <p></p>
+        <button type="button" class="btn btn-danger" @onclick="HandleRemoving">Remove Task</button>
+    </div>
 }else {
     @if (items is null)
     {
@@ -48,24 +73,40 @@
     private bool showOnlyCompleted = false;
     private string buttonMessage = "Show completed";
     private bool addTask = false;
-    private bool removeTask = false;
+    private bool removeTask = false; 
+    private TodoItemDTO newTodo = new TodoItemDTO();
+    private bool taskesHaveChanged = false;
+    private int? removalId = null;
+    
 
     protected override async Task OnInitializedAsync()
     {
-        items = await Http.GetFromJsonAsync<List<string>>("/todoItems");
-        completedTasks = await Http.GetFromJsonAsync<List<string>>("/todoItems/complete");
+        //this is to battle the clash of both of these here writing at the same time C# doesn't like that :(
+        List<string>? localItems = await Http.GetFromJsonAsync<List<string>>("/todoItems");
+        List<string>? localCompleted = await Http.GetFromJsonAsync<List<string>>("/todoItems/complete");
+
+        items = localItems ?? new List<string>();
+        completedTasks = localCompleted ?? new List<string>();
     }
 
-    private void toggleFilter()
+    private async Task toggleFilter()
     {
         showOnlyCompleted = !showOnlyCompleted;
         addTask = false;
         removeTask = false;
-        buttonMessage = showOnlyCompleted ? "Show All" : "Show Completed";    
+        buttonMessage = showOnlyCompleted ? "Show All" : "Show Completed";
+
+        if(taskesHaveChanged){
+            items = await Http.GetFromJsonAsync<List<string>>("/todoItems");
+            completedTasks = await Http.GetFromJsonAsync<List<string>>("/todoItems/complete");
+            taskesHaveChanged = false; 
+        }
+        
     }
 
     private void toggleAdding(){
         addTask = !addTask;
+        removeTask = false;
         if(addTask){
             buttonMessage = "Show all";
             showOnlyCompleted = true;
@@ -73,9 +114,34 @@
     }
     private void toggleRemoving(){
         removeTask = !removeTask;
+        addTask = false;
         if(removeTask){
             buttonMessage = "Show all";
             showOnlyCompleted = true;
+        }
+    }
+
+    private void toggleComplete(){
+
+    }
+
+    private async Task HandleAddSubmit()
+    {        
+        HttpResponseMessage? response = await Http.PostAsJsonAsync(requestUri: "/todoItems", newTodo);
+
+        if (response.IsSuccessStatusCode){
+            newTodo = new TodoItemDTO();
+            taskesHaveChanged = true;
+        } 
+    }
+
+    private async Task HandleRemoving()
+    {
+        HttpResponseMessage? response = await Http.PostAsJsonAsync(requestUri: $"/todoItems/{removalId}", removalId);
+
+        if(response.IsSuccessStatusCode){
+            removalId = null;
+            taskesHaveChanged = true;
         }
     }
 }
